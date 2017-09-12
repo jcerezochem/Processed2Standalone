@@ -5,6 +5,14 @@ import re
 import numpy as np
 import datetime
 
+# Version tag (here comes the version tag)
+try:
+    version_tag
+except:
+    class version_tag:
+        COMMIT="Untracked"
+        DATE="No date"
+
 # Define classes for atom, bond...
 class atom:
     def __init__(self,iat,attype,ires,resname,atname,chgr,q,mass):
@@ -148,8 +156,11 @@ def get_args():
    Convert topology based on [ Xtypes ]
    databases to explicitly defined 
    potential terms in the topology
+   
+   Version(GIT HASH): %s
+   Date             : %s
  ----------------------------------------
-        """
+        """%(version_tag.COMMIT,version_tag.DATE)
         print "    Options:"
         print "    --------"
         print '      {0:<10}  {1:^4}  {2:<41}  {3:<7}'.format("Flag","Type","Description","Value")
