@@ -23,6 +23,7 @@ update_git_flag:
 	 fi
 
 copy_to_installdir:
-	cp $(PROGRAM) $(INSTALL_DIR) 
-	sed -i "8r$(VERSION_FILE)" $(INSTALL_DIR)/$(PROGRAM)
+	@cp $(PROGRAM) $(INSTALL_DIR) 
+	@sed -i "9,11d" $(INSTALL_DIR)/$(PROGRAM)
+	@sed -i "8r$(VERSION_FILE)" $(INSTALL_DIR)/$(PROGRAM)
 

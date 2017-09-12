@@ -6,6 +6,9 @@ import numpy as np
 import datetime
 
 # Version tag (here comes the version tag)
+#
+# (here comes the COMMIT info)
+# (here comes the DATE info)
 try:
     version_tag
 except:
@@ -651,14 +654,14 @@ if __name__ == '__main__':
                         if dihed_prms[ft].has_key(Xitemtype):
                             break
                                 
-                if dihed_prms[ft].has_key(Xitemtype):
-                    dihedral_param_list=dihed_prms[ft][Xitemtype]
-                else:
-                    dihedral_param_list=["0  0  0"]
-                    comment='; Not Found: '
-                    #print itemtype
-                    #print itemtype_r
-                    #sys.exit()
+                    if dihed_prms[ft].has_key(Xitemtype):
+                        dihedral_param_list=dihed_prms[ft][Xitemtype]
+                    else:
+                        dihedral_param_list=["0  0  0"]
+                        comment='; Not Found: '
+                        #print itemtype
+                        #print itemtype_r
+                        #sys.exit()
             else:
                 # Take the extra data as params
                 params   = '   '.join(data[5:])
