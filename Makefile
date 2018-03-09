@@ -6,6 +6,11 @@ VERSION_FILE=version_tag.txt
 all: update_git_flag copy_to_installdir
 
 update_git_flag:
+	@if [ ! -e $(VERSION_FILE) ]; then                   \
+	     echo "class version_tag:" > $(VERSION_FILE);    \
+	     echo "    COMMIT = XXX"   >> $(VERSION_FILE);    \
+	     echo "    DATE = 000"    >> $(VERSION_FILE);    \
+	 fi
 	@git_hash=$$(git describe --long --dirty --always); \
 	 git_hash_old=$$(grep "COMMIT = " $(VERSION_FILE)); \
 	 git_hash_old=$${git_hash_old##*COMMIT = };\
