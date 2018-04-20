@@ -6,10 +6,11 @@ VERSION_FILE=version_tag.txt
 all: update_git_flag copy_to_installdir
 
 update_git_flag:
+	@echo "Updating version flag: $(VERSION_FILE)"
 	@if [ ! -e $(VERSION_FILE) ]; then                   \
 	     echo "class version_tag:" > $(VERSION_FILE);    \
-	     echo "    COMMIT = XXX"   >> $(VERSION_FILE);    \
-	     echo "    DATE = 000"    >> $(VERSION_FILE);    \
+	     echo "    COMMIT = \"XXX\""   >> $(VERSION_FILE);    \
+	     echo "    DATE = \"000\""    >> $(VERSION_FILE);    \
 	 fi
 	@git_hash=$$(git describe --long --dirty --always); \
 	 git_hash_old=$$(grep "COMMIT = " $(VERSION_FILE)); \
@@ -28,6 +29,7 @@ update_git_flag:
 	 fi
 
 copy_to_installdir:
+	@echo "Installing to: $(INSTALL_DIR)"
 	@cp $(PROGRAM) $(INSTALL_DIR) 
 	@sed -i "9,11d" $(INSTALL_DIR)/$(PROGRAM)
 	@sed -i "8r$(VERSION_FILE)" $(INSTALL_DIR)/$(PROGRAM)
