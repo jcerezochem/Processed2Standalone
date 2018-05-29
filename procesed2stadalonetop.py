@@ -571,87 +571,29 @@ if __name__ == '__main__':
                     dihedral_param_list=dihed_prms[ft][itemtype_r]
                 # Try wild cards
                 else:
-                    found_params=False
-                    # Try with itemtype ordering
-                    for i in range(4):
-                        dihed_    = itemtype.split('-')
-                        dihed_[i] = 'X'
-                        Xitemtype = '-'.join(dihed_)
-                        if dihed_prms[ft].has_key(Xitemtype):
+                    # Search keys manually (only if have 'X' atoms)
+                    Xitemtype = None
+                    for dihed_key in dihed_prms[ft].keys():
+                        dihed_bd = dihed_key.split('-')
+                        if not 'X' in dihed_bd:
+                            continue
+                        dihed_fw = itemtype.split('-')
+                        dihed_bw = itemtype_r.split('-')
+                        # Try fw
+                        found_params=True
+                        for i in range(4):
+                            if dihed_bd[i] != dihed_fw[i] and dihed_bd[i] != "X":
+                                found_params=False
+                        if found_params:
+                            Xitemtype = dihed_key
                             break
-                            
-                        # Try multiple wildcards
-                        for j in range(4):
-                            if i==j:
-                                continue
-                            dihed_[j] = 'X'
-                            Xitemtype = '-'.join(dihed_)
-                            if dihed_prms[ft].has_key(Xitemtype):
-                                break
-                                
-                            for k in range(4):
-                                if i==k or j==k:
-                                    continue
-                                dihed_[k] = 'X'
-                                Xitemtype = '-'.join(dihed_)
-                                if dihed_prms[ft].has_key(Xitemtype):
-                                    break
-                                    
-                                for l in range(4):
-                                    if i==l or j==l or k==l:
-                                        continue
-                                    dihed_[l] = 'X'
-                                    Xitemtype = '-'.join(dihed_)
-                                    if dihed_prms[ft].has_key(Xitemtype):
-                                        break
-                                        
-                                if dihed_prms[ft].has_key(Xitemtype):
-                                    break
-                            if dihed_prms[ft].has_key(Xitemtype):
-                                break
-                        if dihed_prms[ft].has_key(Xitemtype):
-                            break
-                
-                    # Try with itemtype_r ordering
-                    for i in range(4):
-                        # Only if not already found
-                        if dihed_prms[ft].has_key(Xitemtype):
-                            break
-                        dihed_    = itemtype_r.split('-')
-                        dihed_[i] = 'X'
-                        Xitemtype = '-'.join(dihed_)
-                        if dihed_prms[ft].has_key(Xitemtype):
-                            break
-                            
-                        for j in range(4):
-                            if i==j:
-                                continue
-                            dihed_[j] = 'X'
-                            Xitemtype = '-'.join(dihed_)
-                            if dihed_prms[ft].has_key(Xitemtype):
-                                break
-                                
-                            for k in range(4):
-                                if i==k or j==k:
-                                    continue
-                                dihed_[k] = 'X'
-                                Xitemtype = '-'.join(dihed_)
-                                if dihed_prms[ft].has_key(Xitemtype):
-                                    break
-                                    
-                                for l in range(4):
-                                    if i==l or j==l or k==l:
-                                        continue
-                                    dihed_[l] = 'X'
-                                    Xitemtype = '-'.join(dihed_)
-                                    if dihed_prms[ft].has_key(Xitemtype):
-                                        break
-                                        
-                                if dihed_prms[ft].has_key(Xitemtype):
-                                    break
-                            if dihed_prms[ft].has_key(Xitemtype):
-                                break
-                        if dihed_prms[ft].has_key(Xitemtype):
+                        # Try bw
+                        found_params=True
+                        for i in range(4):
+                            if dihed_bd[i] != dihed_bw[i] and dihed_bd[i] != "X":
+                                found_params=False
+                        if found_params:
+                            Xitemtype = dihed_key
                             break
                                 
                     if dihed_prms[ft].has_key(Xitemtype):
