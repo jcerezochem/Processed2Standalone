@@ -252,6 +252,7 @@ if __name__ == '__main__':
     
     # LOOP1: get atoms
     # Initialize
+    molecules=[]
     section=''
     for line in topentry:
         # Use re to locate sections
@@ -269,11 +270,20 @@ if __name__ == '__main__':
             # *data expands the array into the elements
             atoms.append(atom(*data))
             # Get LJ parameters from database...
+
+        elif section == 'molecules':
+            line_strip = line.split(';')[0]
+            if (line_strip.replace(' ','')) == 0:
+                continue
+            else:
+                data=line_strip.split()
+                molecules.append(data[0])
     
     # LOOP2: get dicti types and used atomtypes
     # Initialize
     section=''
     iat=0
+    molecule_exists=True
     for line in topentry:
         # Use re to locate sections
         # We use a named group to individuate the section. This is done with
@@ -282,9 +292,11 @@ if __name__ == '__main__':
         match = re.match(pattern,line)
         if match:
             section=match.group('section')
-            if section == 'atomtypes':
+            if section == 'atomtypes' or section == 'system' or section == 'molecules':
                 print '\n%s'%(line)
-            elif not 'types' in section:
+            if section == 'implicit_genborn_params':
+                pass
+            elif not 'type' in section and molecule_exists:
                 print '\n%s'%(line)
             continue
             
@@ -431,9 +443,14 @@ if __name__ == '__main__':
         # Sections with parameters for the molecule
         #-------------------------------------------
         if section == 'moleculetype':
+            molecule_exists=True
             molname = line.split()[0]
-            print line
-        elif section == 'atoms':
+            if molname in molecules:
+                print '\n%s'%('[ moleculetype ]')
+                print line
+            else:
+                molecule_exists=False
+        elif section == 'atoms' and molecule_exists:
             # Atom info was picked on the first loop
             # Get LJ parameters from database
             atoms[iat].setLJ(*atom_prms[atoms[iat].attype].split()[3:5])
@@ -443,7 +460,7 @@ if __name__ == '__main__':
             print line #+ '; mass:'+atom_prms[atoms[iat].attype].split()[0]
             iat += 1
             
-        elif section == 'bonds':
+        elif section == 'bonds' and molecule_exists:
             comment=''
             data = line.split()
             i1=int(data[0])-1
@@ -479,7 +496,7 @@ if __name__ == '__main__':
             #bonds[-1].printbond()
             print comment+bonds[-1].entryline()+'      ;'+itemtype
             
-        elif section == 'pairs':
+        elif section == 'pairs' and molecule_exists:
             data = line.split()
             i1=int(data[0])-1
             i2=int(data[1])-1
@@ -538,10 +555,10 @@ if __name__ == '__main__':
             pairs[-1].setpair(*data)
             print comment+pairs[-1].entryline()+'      ;'+itemtype
             
-        elif section == 'exclusions':
+        elif section == 'exclusions' and molecule_exists:
             print line
     
-        elif section == 'angles':
+        elif section == 'angles' and molecule_exists:
             comment=''
             data = line.split()
             i1=int(data[0])-1
@@ -569,7 +586,7 @@ if __name__ == '__main__':
             angles[-1].setangle(*data)
             print comment+angles[-1].entryline()+'      ;'+itemtype
             
-        elif section == 'dihedrals':
+        elif section == 'dihedrals' and molecule_exists:
             comment=''
             data = line.split()
             i1=int(data[0])-1
