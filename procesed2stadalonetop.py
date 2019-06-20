@@ -250,7 +250,7 @@ if __name__ == '__main__':
     print '; Original topology file: '+topfile
     print ';'
     
-    # LOOP1: get atoms
+    # LOOP0: get molecules
     # Initialize
     molecules=[]
     section=''
@@ -263,14 +263,6 @@ if __name__ == '__main__':
         if match:
             section=match.group('section')
         
-        elif section == 'atoms':
-            # Get all items for the atom in data array
-            data = line.split()
-            # Form the atoms array with a new atom (class)
-            # *data expands the array into the elements
-            atoms.append(atom(*data))
-            # Get LJ parameters from database...
-
         elif section == 'molecules':
             line_strip = line.split(';')[0]
             if (line_strip.replace(' ','')) == 0:
@@ -279,7 +271,36 @@ if __name__ == '__main__':
                 data=line_strip.split()
                 molecules.append(data[0])
     
-    # LOOP2: get dicti types and used atomtypes
+    # LOOP1: get atoms
+    # Initialize
+    section=''
+    for line in topentry:
+        # Use re to locate sections
+        # We use a named group to individuate the section. This is done with
+        # "?P<sect>" (sections are the blocks in parenthesis)
+        pattern = r'(^( )*\[( )*(?P<section>[a-zA-Z_]+)( )*\]( )*$)'
+        match = re.match(pattern,line)
+        if match:
+            section=match.group('section')
+            continue
+        
+        elif section == 'atoms' and molecule_exists:
+            # Get all items for the atom in data array
+            data = line.split()
+            # Form the atoms array with a new atom (class)
+            # *data expands the array into the elements
+            atoms.append(atom(*data))
+            # Get LJ parameters from database...
+
+        if section == 'moleculetype':
+            molname = line.split()[0]
+            if molname in molecules:
+                molecule_exists=True
+            else:
+                molecule_exists=False
+   
+
+    # LOOP2: get dict types and used atomtypes
     # Initialize
     section=''
     iat=0
