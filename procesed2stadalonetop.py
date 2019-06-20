@@ -18,17 +18,33 @@ except:
 
 # Define classes for atom, bond...
 class atom:
-    def __init__(self,iat,attype,ires,resname,atname,chgr,q,mass):
-        self.iat     = int(iat)
-        self.attype  = attype
-        self.ires    = int(ires)
-        self.resname = resname
-        self.atname  = atname
-        self.chrg    = int(chgr)
-        self.q       = float(q)
-        self.mass    = float(mass)
-        self.V       = 0.0  # sigma(cr=2,3) or C6(cr=1)
-        self.W       = 0.0  # epsilon(cr=2,3) or C12(cr=1)
+    def __init__(self,*args):
+#    def __init__(self,iat,attype,ires,resname,atname,chgr,q,mass):
+        if len(args) == 8:
+            self.iat     = int(args[0])
+            self.attype  = args[1]
+            self.ires    = int(args[2])
+            self.resname = args[3]
+            self.atname  = args[4]
+            self.chrg    = int(args[5])
+            self.q       = float(args[6])
+            self.mass    = float(args[7])
+            self.V       = 0.0  # sigma(cr=2,3) or C6(cr=1)
+            self.W       = 0.0  # epsilon(cr=2,3) or C12(cr=1)
+        elif len(args) == 7:
+            # E.g. IB+ ion
+            self.iat     = int(args[0])
+            self.attype  = args[1]
+            self.ires    = int(args[2])
+            self.resname = args[3]
+            self.atname  = args[4]
+            self.chrg    = int(args[5])
+            self.q       = float(args[6])
+            self.mass    = 0.0  # To be set..
+            self.V       = 0.0  # sigma(cr=2,3) or C6(cr=1)
+            self.W       = 0.0  # epsilon(cr=2,3) or C12(cr=1)
+        else:
+            raise TypeError('Wrong number of elements to instaciate atom. Expected 7 or 8, got '+str(len(args)))
     def setLJ(self,V,W):
         self.V       = float(V)
         self.W       = float(W)
