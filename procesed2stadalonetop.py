@@ -315,7 +315,7 @@ if __name__ == '__main__':
             section=match.group('section')
             if section == 'atomtypes' or section == 'system' or section == 'molecules':
                 print '\n%s'%(line)
-            if section == 'implicit_genborn_params':
+            elif section == 'implicit_genborn_params':
                 pass
             elif not 'type' in section and molecule_exists:
                 print '\n%s'%(line)
