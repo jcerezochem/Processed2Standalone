@@ -302,6 +302,10 @@ if __name__ == '__main__':
 
     # LOOP2: get dict types and used atomtypes
     # Initialize
+    f = open('ff_gau.prm','w')
+    gau_bonds=[]
+    gau_angles=[]
+    gau_diheds=[]
     section=''
     iat=0
     molecule_exists=True
@@ -352,6 +356,15 @@ if __name__ == '__main__':
             # Only print used atoms
             if attype in [ atoms[i].attype for i in range(len(atoms)) ]:
                 print '%-10s %10s %10s %1s %10s %10s'%(attype,atmass,atq,ptype,sigma,epsilon)
+                #----------------------
+                #Print gaussian params
+                #----------------------
+                rminh = float(sigma) * 2.**(1/6) * 5.
+                epsG  = float(epsilon)/4.184
+                print >>f, 'VDW %s  %10.3f  %10.3f'%(attype,rminh,epsG)
+                #
+                iat += 1
+                
                 
         elif section == 'bondtypes':
             # Get data
@@ -479,7 +492,6 @@ if __name__ == '__main__':
             # WARNING: the link between atom_prms and the attype will be lost for OPLS at this point
             atoms[iat].attype = atom_prms[atoms[iat].attype].split()[-1]
             print line #+ '; mass:'+atom_prms[atoms[iat].attype].split()[0]
-            iat += 1
             
         elif section == 'bonds' and molecule_exists:
             comment=''
@@ -516,6 +528,16 @@ if __name__ == '__main__':
             bonds[-1].setbond(*data)
             #bonds[-1].printbond()
             print comment+bonds[-1].entryline()+'      ;'+itemtype
+            #----------------------
+            #Print gaussian params
+            #----------------------
+            if itemtype not in gau_bonds:
+                gau_bonds.append(itemtype)
+                if (bonds[-1].ft == 1):
+                    r0_g = float(bonds[-1].prms.split()[0])*10.
+                    kb_g = float(bonds[-1].prms.split()[1])/4.184/100.
+                    print >>f, 'HrmStr1 %s  %12.4f %12.4f'%(itemtype.replace('-','  '),kb_g,r0_g)
+            #
             
         elif section == 'pairs' and molecule_exists:
             data = line.split()
@@ -606,6 +628,16 @@ if __name__ == '__main__':
             angles.append(angle())    
             angles[-1].setangle(*data)
             print comment+angles[-1].entryline()+'      ;'+itemtype
+            #----------------------
+            #Print gaussian params
+            #----------------------
+            if itemtype not in gau_angles:
+                gau_angles.append(itemtype)
+                if (angles[-1].ft == 1):
+                    a0_g = float(angles[-1].prms.split()[0])
+                    ka_g = float(angles[-1].prms.split()[1])/4.184
+                    print >>f, 'HrmBnd1 %s  %12.4f %12.4f'%(itemtype.replace('-','  '),ka_g,a0_g)
+            #
             
         elif section == 'dihedrals' and molecule_exists:
             comment=''
@@ -671,6 +703,17 @@ if __name__ == '__main__':
                 print comment+diheds[-1].entryline()+'      ;'+itemtype+' # '+str(i+1)
                 # Restore data for next cycle
                 del data[-1]
+                #----------------------
+                #Print gaussian params
+                #----------------------
+                if itemtype+params+str(i) not in gau_diheds:
+                    gau_diheds.append(itemtype+params+str(i))
+                    if (diheds[-1].ft == 1 or diheds[-1].ft == 9):
+                        p0_g = float(diheds[-1].prms.split()[0])+180.0
+                        kd_g = float(diheds[-1].prms.split()[1])/4.184*2.
+                        n_g  = int(diheds[-1].prms.split()[2])
+                        print >>f, 'DreiTrs %s  %12.4f %12.4f %i %i'%(itemtype.replace('-','  '),kd_g,p0_g,n_g,1)
+                #
             
         elif section == 'system':
             print line
@@ -678,6 +721,6 @@ if __name__ == '__main__':
         elif section == 'molecules':
             print line
             
-
-
+            
+    f.close()
 
