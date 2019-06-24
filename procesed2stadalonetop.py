@@ -718,8 +718,9 @@ if __name__ == '__main__':
                         n_g  = int(diheds[-1].prms.split()[2])
                         if (n_g > 4):
                             # This function type needs revision
+                            print >>f, '! Warning: too large multiplicity for an AmbTrs. Maybe DreiTrs may fit:'
                             p0_g = p0_g + 180.
-                            print >>f, 'DreiTrs %s  %12.4f %12.4f %2.1f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g),1.)
+                            print >>f, '! DreiTrs %s  %12.4f %12.4f %2.1f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g),1.)
                         elif (n_g > 0):
                             if itemtype not in gau_diheds_amb.keys():
                                 gau_diheds_amb[itemtype] = [[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]]
