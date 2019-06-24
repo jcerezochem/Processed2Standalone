@@ -303,6 +303,8 @@ if __name__ == '__main__':
     # LOOP2: get dict types and used atomtypes
     # Initialize
     f = open('ff_gau.prm','w')
+    print >>f, '! Non-bonded master equation for AmberFF;'
+    print >>f, 'NonBon 3 1 0 0 0.0 0.0 0.5 0.0 0.0 -1.2'
     gau_bonds=[]
     gau_angles=[]
     gau_diheds=[]
@@ -713,6 +715,7 @@ if __name__ == '__main__':
                 if itemtype+params not in gau_diheds and itemtype_r+params not in gau_diheds:
                     gau_diheds.append(itemtype+params)
                     if (diheds[-1].ft == 1 or diheds[-1].ft == 9):
+                        # Proper dihedral: Fourier type
                         p0_g = float(diheds[-1].prms.split()[0])
                         kd_g = float(diheds[-1].prms.split()[1])/4.184
                         n_g  = int(diheds[-1].prms.split()[2])
@@ -725,6 +728,15 @@ if __name__ == '__main__':
                             if itemtype not in gau_diheds_amb.keys():
                                 gau_diheds_amb[itemtype] = [[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]]
                             gau_diheds_amb[itemtype][n_g-1] = [kd_g,p0_g]
+                    elif (diheds[-1].ft == 2):
+                        # Imnproper dihedral: harmonic => Transform to Fourier type (n=1)
+                        # as harmonic types seems to be absent in Gaussian
+                        # PO1 = phi_equil+180.0
+                        # k1  = kharm
+                        p0_g = float(diheds[-1].prms.split()[0])+180.
+                        kd_g = float(diheds[-1].prms.split()[1])/4.184
+                        n_g  = 1
+                        print >>f, 'ImpTrs %s  %12.4f %12.4f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g))
                 #
             
         elif section == 'system':
