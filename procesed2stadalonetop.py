@@ -306,6 +306,7 @@ if __name__ == '__main__':
     gau_bonds=[]
     gau_angles=[]
     gau_diheds=[]
+    gau_diheds_amb=dict()
     section=''
     iat=0
     molecule_exists=True
@@ -504,6 +505,7 @@ if __name__ == '__main__':
             if not bond_prms.has_key(ft):
                     bond_prms[ft] = dict()
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype
+            itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
             if len(data) == 3 and ft != 5:
                 # Get data from bondtype (consider also reverse order)
                 itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
@@ -531,7 +533,7 @@ if __name__ == '__main__':
             #----------------------
             #Print gaussian params
             #----------------------
-            if itemtype not in gau_bonds:
+            if itemtype not in gau_bonds and itemtype_r not in gau_bonds:
                 gau_bonds.append(itemtype)
                 if (bonds[-1].ft == 1):
                     r0_g = float(bonds[-1].prms.split()[0])*10.
@@ -549,6 +551,7 @@ if __name__ == '__main__':
             if not pair_prms.has_key(ft):
                     pair_prms[ft] = dict()
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype
+            itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
             if len(data) == 3:
                 # Get data from bondtype (consider also reverse order)
                 itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
@@ -609,6 +612,7 @@ if __name__ == '__main__':
             i3=int(data[2])-1
             ft=int(data[3])
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype+'-'+atoms[i3].attype
+            itemtype_r = atoms[i3].attype+'-'+atoms[i2].attype+'-'+atoms[i1].attype
             if len(data) == 4:
                 # Get data from bondtype (consider also reverse order)
                 itemtype_r = atoms[i3].attype+'-'+atoms[i2].attype+'-'+atoms[i1].attype
@@ -631,7 +635,7 @@ if __name__ == '__main__':
             #----------------------
             #Print gaussian params
             #----------------------
-            if itemtype not in gau_angles:
+            if itemtype not in gau_angles and itemtype_r not in gau_angles:
                 gau_angles.append(itemtype)
                 if (angles[-1].ft == 1):
                     a0_g = float(angles[-1].prms.split()[0])
@@ -706,13 +710,20 @@ if __name__ == '__main__':
                 #----------------------
                 #Print gaussian params
                 #----------------------
-                if itemtype+params+str(i) not in gau_diheds:
-                    gau_diheds.append(itemtype+params+str(i))
+                if itemtype+params not in gau_diheds and itemtype_r+params not in gau_diheds:
+                    gau_diheds.append(itemtype+params)
                     if (diheds[-1].ft == 1 or diheds[-1].ft == 9):
-                        p0_g = float(diheds[-1].prms.split()[0])+180.0
-                        kd_g = float(diheds[-1].prms.split()[1])/4.184*2.
+                        p0_g = float(diheds[-1].prms.split()[0])
+                        kd_g = float(diheds[-1].prms.split()[1])/4.184
                         n_g  = int(diheds[-1].prms.split()[2])
-                        print >>f, 'DreiTrs %s  %12.4f %12.4f %i %i'%(itemtype.replace('-','  '),kd_g,p0_g,n_g,1)
+                        if (n_g > 4):
+                            # This function type needs revision
+                            p0_g = p0_g + 180.
+                            print >>f, 'DreiTrs %s  %12.4f %12.4f %2.1f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g),1.)
+                        elif (n_g > 0):
+                            if itemtype not in gau_diheds_amb.keys():
+                                gau_diheds_amb[itemtype] = [[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]]
+                            gau_diheds_amb[itemtype][n_g-1] = [kd_g,p0_g]
                 #
             
         elif section == 'system':
@@ -721,6 +732,19 @@ if __name__ == '__main__':
         elif section == 'molecules':
             print line
             
-            
-    f.close()
 
+    # Print now Amber torisions for gaussian
+    for dihed in gau_diheds_amb:
+        p1 = int(gau_diheds_amb[dihed][0][1])
+        p2 = int(gau_diheds_amb[dihed][1][1])
+        p3 = int(gau_diheds_amb[dihed][2][1])
+        p4 = int(gau_diheds_amb[dihed][3][1])
+        v1 = gau_diheds_amb[dihed][0][0]
+        v2 = gau_diheds_amb[dihed][1][0]
+        v3 = gau_diheds_amb[dihed][2][0]
+        v4 = gau_diheds_amb[dihed][3][0]
+        print >>f, 'AmbTrs %s %4i %4i %4i %4i %12.4f %12.4f %12.4f %12.4f %2.1f'%(dihed.replace('-','  '),\
+                                                                                  p1,p2,p3,p4,\
+                                                                                  v1,v2,v3,v4,1.)
+        
+    f.close()
