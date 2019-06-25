@@ -362,7 +362,7 @@ if __name__ == '__main__':
                 #----------------------
                 #Print gaussian params
                 #----------------------
-                rminh = float(sigma) * 2.**(1/6) * 5.
+                rminh = float(sigma) * 2.**(1./6.) * 5.
                 epsG  = float(epsilon)/4.184
                 print >>f, 'VDW %s  %10.3f  %10.3f'%(attype,rminh,epsG)
                 #
