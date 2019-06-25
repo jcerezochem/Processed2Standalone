@@ -11,3 +11,4 @@ To get a minimal topology from a topolgy with #include calls (e.g. topol.top) on
 2. Then, apply the script to processed.top:<br>
 `procesed2standalone.py -f processed.top > minimal.top`
 
+In the process, a file with the FF in Gaussian MM format is generated (`ff_gau.prm`)
