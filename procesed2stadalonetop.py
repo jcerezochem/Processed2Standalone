@@ -366,7 +366,6 @@ if __name__ == '__main__':
                 epsG  = float(epsilon)/4.184
                 print >>f, 'VDW %s  %10.3f  %10.3f'%(attype,rminh,epsG)
                 #
-                iat += 1
                 
                 
         elif section == 'bondtypes':
@@ -495,6 +494,8 @@ if __name__ == '__main__':
             # WARNING: the link between atom_prms and the attype will be lost for OPLS at this point
             atoms[iat].attype = atom_prms[atoms[iat].attype].split()[-1]
             print line #+ '; mass:'+atom_prms[atoms[iat].attype].split()[0]
+            # Update iat
+            iat += 1
             
         elif section == 'bonds' and molecule_exists:
             comment=''
