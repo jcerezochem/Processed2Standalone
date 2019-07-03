@@ -311,6 +311,7 @@ if __name__ == '__main__':
     gau_diheds_amb=dict()
     section=''
     iat=0
+    nshift=0
     molecule_exists=True
     for line in topentry:
         # Use re to locate sections
@@ -484,6 +485,9 @@ if __name__ == '__main__':
             if molname in molecules:
                 print '\n%s'%('[ moleculetype ]')
                 print line
+                # Update the shift to get the right index for atoms
+                nshift = iat
+                #print >> sys.stderr, 'nshift is %i when enter %s'%(nshift,molname)
             else:
                 molecule_exists=False
         elif section == 'atoms' and molecule_exists:
@@ -495,13 +499,14 @@ if __name__ == '__main__':
             atoms[iat].attype = atom_prms[atoms[iat].attype].split()[-1]
             print line #+ '; mass:'+atom_prms[atoms[iat].attype].split()[0]
             # Update iat
+            #print >> sys.stderr, 'Increasing iat to %i for after atom %s'%(iat+1,atoms[iat].attype)
             iat += 1
             
         elif section == 'bonds' and molecule_exists:
             comment=''
             data = line.split()
-            i1=int(data[0])-1
-            i2=int(data[1])-1
+            i1=int(data[0])-1 + nshift
+            i2=int(data[1])-1 + nshift
             ft=int(data[2])
             # if there is a dict for this ft. Otherwise, create to 
             # avoid errors
@@ -546,8 +551,8 @@ if __name__ == '__main__':
             
         elif section == 'pairs' and molecule_exists:
             data = line.split()
-            i1=int(data[0])-1
-            i2=int(data[1])-1
+            i1=int(data[0])-1 + nshift
+            i2=int(data[1])-1 + nshift
             ft=int(data[2])
             # if there is a dict for this ft. Otherwise, create to 
             # avoid errors
@@ -610,9 +615,9 @@ if __name__ == '__main__':
         elif section == 'angles' and molecule_exists:
             comment=''
             data = line.split()
-            i1=int(data[0])-1
-            i2=int(data[1])-1
-            i3=int(data[2])-1
+            i1=int(data[0])-1 + nshift
+            i2=int(data[1])-1 + nshift
+            i3=int(data[2])-1 + nshift
             ft=int(data[3])
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype+'-'+atoms[i3].attype
             itemtype_r = atoms[i3].attype+'-'+atoms[i2].attype+'-'+atoms[i1].attype
@@ -649,10 +654,10 @@ if __name__ == '__main__':
         elif section == 'dihedrals' and molecule_exists:
             comment=''
             data = line.split()
-            i1=int(data[0])-1
-            i2=int(data[1])-1
-            i3=int(data[2])-1
-            i4=int(data[3])-1
+            i1=int(data[0])-1 + nshift
+            i2=int(data[1])-1 + nshift
+            i3=int(data[2])-1 + nshift
+            i4=int(data[3])-1 + nshift
             ft=int(data[4])
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype+'-'+atoms[i3].attype+'-'+atoms[i4].attype
             if len(data) == 5:
