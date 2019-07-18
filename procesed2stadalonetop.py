@@ -743,6 +743,28 @@ if __name__ == '__main__':
                         kd_g = float(diheds[-1].prms.split()[1])/4.184
                         n_g  = 1
                         print >>f, 'ImpTrs %s  %12.4f %12.4f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g))
+                    elif (diheds[-1].ft == 3):
+                        # RB type:
+                        c0  = float(diheds[-1].prms.split()[0])
+                        c1  = float(diheds[-1].prms.split()[1])
+                        c2  = float(diheds[-1].prms.split()[2])
+                        c3  = float(diheds[-1].prms.split()[3])
+                        c4  = float(diheds[-1].prms.split()[4])
+                        # Tranform to Fourier type first (see Gromacs manual)
+                        k4_g = -c4/4.
+                        k3_g = -c3/2.
+                        k2_g = -c2 - 4.*k4_g
+                        k1_g = -2*c1 + 3*k3_g
+                        k4_g /= (2.*4.184)
+                        k3_g /= (2.*4.184)
+                        k2_g /= (2.*4.184)
+                        k1_g /= (2.*4.184)
+                        gau_diheds_amb[itemtype] = [[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]]
+                        gau_diheds_amb[itemtype][0] = [k1_g,0]
+                        gau_diheds_amb[itemtype][1] = [k2_g,180]
+                        gau_diheds_amb[itemtype][2] = [k3_g,0]
+                        gau_diheds_amb[itemtype][3] = [k4_g,180]
+                        
                 #
             
         elif section == 'system':
