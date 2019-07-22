@@ -709,6 +709,10 @@ if __name__ == '__main__':
                 dihedral_param_list=[params]
             # Form element(s)
             for i,params in enumerate(dihedral_param_list):
+                # Remove comments (gromacs style)
+                params = params.split(';')[0]
+                # Remove comments (Joye style)
+                params = params.split('#')[0]
                 data.append(params)
                 diheds.append(dihed())  
                 diheds[-1].setdihed(*data)
@@ -718,8 +722,13 @@ if __name__ == '__main__':
                 #----------------------
                 #Print gaussian params
                 #----------------------
-                if itemtype+params not in gau_diheds and itemtype_r+params not in gau_diheds:
-                    gau_diheds.append(itemtype+params)
+                # Generate itemtype_and_params string with unique identifies for itemtype+params
+                # so that two identical itemtypes with different params are printed
+                plist_chr=[str(float(x)) for x in params.split()]
+                itemtype_and_params='*'.join([itemtype]+plist_chr)
+                itemtype_r_and_params='*'.join([itemtype_r]+plist_chr)
+                if itemtype_and_params not in gau_diheds and itemtype_r_and_params not in gau_diheds:
+                    gau_diheds.append(itemtype_and_params)
                     if (diheds[-1].ft == 1 or diheds[-1].ft == 9):
                         # Proper dihedral: Fourier type
                         p0_g = float(diheds[-1].prms.split()[0])
@@ -773,6 +782,13 @@ if __name__ == '__main__':
         elif section == 'molecules':
             print line
             
+    #print >> sys.stderr, ""
+    #print >> sys.stderr, "Summary of gau_diheds"
+    #for item in gau_diheds:
+        #print >> sys.stderr, item
+    #print >> sys.stderr, ""
+    #print >> sys.stderr, "--End of summary"
+    #print >> sys.stderr, ""
 
     # Print now Amber torisions for gaussian
     for dihed in gau_diheds_amb:
