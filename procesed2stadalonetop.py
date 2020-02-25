@@ -762,7 +762,7 @@ if __name__ == '__main__':
                         # Tranform to Fourier type first (see Gromacs manual)
                         k4_g = -c4/4.
                         k3_g = -c3/2.
-                        k2_g = -c2 - 4.*k4_g
+                        k2_g = -c2 + 4.*k4_g
                         k1_g = -2*c1 + 3*k3_g
                         k4_g /= (2.*4.184)
                         k3_g /= (2.*4.184)
