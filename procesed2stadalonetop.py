@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import re
@@ -158,7 +158,7 @@ def get_args():
 
         input_args_dict[input_arg[0]] = input_arg[1]
     
-    for key,value in input_args_dict.iteritems():
+    for key,value in input_args_dict.items():
         # Check it is allowed
         isValid = final_arguments.get(key,None)
         if isValid is None:
@@ -168,7 +168,7 @@ def get_args():
         
     if final_arguments.get("-h"):
         
-        print """
+        print("""
  ----------------------------------------
         procesed2standalone.py
 
@@ -179,17 +179,17 @@ def get_args():
    Version(GIT HASH): %s
    Date             : %s
  ----------------------------------------
-        """%(version_tag.COMMIT,version_tag.DATE)
-        print "    Options:"
-        print "    --------"
-        print '      {0:<10}  {1:^4}  {2:<41}  {3:<7}'.format("Flag","Type","Description","Value")
-        print '      {0:-<10}  {1:-^4}  {2:-<41}  {3:-<7}'.format("","","","")
-        for key,value in final_arguments.iteritems():
+        """%(version_tag.COMMIT,version_tag.DATE))
+        print("    Options:")
+        print("    --------")
+        print('      {0:<10}  {1:^4}  {2:<41}  {3:<7}'.format("Flag","Type","Description","Value"))
+        print('      {0:-<10}  {1:-^4}  {2:-<41}  {3:-<7}'.format("","","",""))
+        for key,value in final_arguments.items():
             descr = arg_description[key]
             atype = arg_type[key]
             #atype=str(type(value)).replace("<type '","").replace("'>","")
-            print '      {0:<10}  {1:^4}  {2:<41}  {3:<7}'.format(key, atype, descr, str(value))
-        print ""
+            print('      {0:<10}  {1:^4}  {2:<41}  {3:<7}'.format(key, atype, descr, str(value)))
+        print("")
         
         sys.exit()
         
@@ -245,10 +245,10 @@ if __name__ == '__main__':
     dihed_prms=dict()
     
     
-    print '; Topology Generated with '+sys.argv[0]
-    print '; Launched on: ',datetime.datetime.now()
-    print '; Original topology file: '+topfile
-    print ';'
+    print('; Topology Generated with '+sys.argv[0])
+    print('; Launched on: ',datetime.datetime.now())
+    print('; Original topology file: '+topfile)
+    print(';')
     
     # LOOP0: get molecules
     # Initialize
@@ -303,8 +303,8 @@ if __name__ == '__main__':
     # LOOP2: get dict types and used atomtypes
     # Initialize
     f = open('ff_gau.prm','w')
-    print >>f, '! Non-bonded master equation for AmberFF;'
-    print >>f, 'NonBon 3 1 0 0 0.0 0.0 0.5 0.0 0.0 -1.2'
+    print('! Non-bonded master equation for AmberFF;',file=f)
+    print('NonBon 3 1 0 0 0.0 0.0 0.5 0.0 0.0 -1.2',file=f)
     gau_bonds=[]
     gau_angles=[]
     gau_diheds=[]
@@ -322,11 +322,11 @@ if __name__ == '__main__':
         if match:
             section=match.group('section')
             if section == 'atomtypes' or section == 'system' or section == 'molecules':
-                print '\n%s'%(line)
+                print('\n%s'%(line))
             elif section == 'implicit_genborn_params':
                 pass
             elif not 'type' in section and molecule_exists:
-                print '\n%s'%(line)
+                print('\n%s'%(line))
             continue
             
         # Sections with parameters databases (types)
@@ -338,7 +338,7 @@ if __name__ == '__main__':
             genpairs= data[2]
             fudgeLJ = float(data[3])
             fudgeQQ = float(data[4])
-            print line
+            print(line)
         elif section == 'atomtypes':
             # Get data
             data = line.split()
@@ -359,13 +359,13 @@ if __name__ == '__main__':
             atom_prms[attype] = '  '.join([atmass,atq,ptype,sigma,epsilon,attypeb])
             # Only print used atoms
             if attype in [ atoms[i].attype for i in range(len(atoms)) ]:
-                print '%-10s %10s %10s %1s %10s %10s'%(attype,atmass,atq,ptype,sigma,epsilon)
+                print('%-10s %10s %10s %1s %10s %10s'%(attype,atmass,atq,ptype,sigma,epsilon))
                 #----------------------
                 #Print gaussian params
                 #----------------------
                 rminh = float(sigma) * 2.**(1./6.) * 5.
                 epsG  = float(epsilon)/4.184
-                print >>f, 'VDW %s  %10.3f  %10.3f'%(attype,rminh,epsG)
+                print('VDW %s  %10.3f  %10.3f'%(attype,rminh,epsG),file=f)
                 #
                 
                 
@@ -378,15 +378,15 @@ if __name__ == '__main__':
             # Entries are float (not list)
             # Generate new dict layer if still not created
             ft=int(data[2])
-            if not bond_prms.has_key(ft):
+            if not ft in bond_prms:
                 bond_prms[ft] = dict()
             # First check if already in to db
-            if bond_prms[ft].has_key(bondtype):
-                print '; WARNING: multiple bond definition'
-                print '; '+bondtype
-                print '; New parameters   : ',params
-                print '; Overridden params: ',bond_prms[ft][bondtype]
-                print ';'
+            if bondtype in bond_prms[ft]:
+                print('; WARNING: multiple bond definition')
+                print('; '+bondtype)
+                print('; New parameters   : ',params)
+                print('; Overridden params: ',bond_prms[ft][bondtype])
+                print(';')
             else:
                 bond_prms[ft][bondtype] = params
                 
@@ -399,15 +399,15 @@ if __name__ == '__main__':
             # Entries are float (not list)
             # Generate new dict layer if still not created
             ft=int(data[2])
-            if not pair_prms.has_key(ft):
+            if not ft in pair_prms:
                 pair_prms[ft] = dict()
             # First check if already in to db
-            if pair_prms[ft].has_key(pairtype):
-                print '; WARNING: multiple pair definition'
-                print '; '+pairtype
-                print '; New parameters   : ',params
-                print '; Overridden params: ',pair_prms[ft][pairtype]
-                print ';'
+            if pairtype in pair_prms[ft]: 
+                print('; WARNING: multiple pair definition')
+                print('; '+pairtype)
+                print('; New parameters   : ',params)
+                print('; Overridden params: ',pair_prms[ft][pairtype])
+                print(';')
             else:
                 pair_prms[ft][pairtype] = params
                 
@@ -420,15 +420,15 @@ if __name__ == '__main__':
             # Entries are float (not list)
             # Generate new dict layer if still not created
             ft=int(data[3])
-            if not angle_prms.has_key(ft):
+            if not ft in angle_prms:
                 angle_prms[ft] = dict()
             # First check if already in to db
-            if angle_prms[ft].has_key(angletype):
-                print '; WARNING: multiple angle definition'
-                print '; '+angletype
-                print '; New parameters   : ',params
-                print '; Overridden params: ',angle_prms[ft][angletype]
-                print ';'
+            if angletype in angle_prms[ft]:
+                print('; WARNING: multiple angle definition')
+                print('; '+angletype)
+                print('; New parameters   : ',params)
+                print('; Overridden params: ',angle_prms[ft][angletype])
+                print(';')
             else:
                 angle_prms[ft][angletype] = params
                 
@@ -459,17 +459,17 @@ if __name__ == '__main__':
             
             # Generate new dict layer if still not created
             ft=int(data[4])
-            if not dihed_prms.has_key(ft):
+            if not ft in dihed_prms:
                 dihed_prms[ft] = dict()
             
             # First check if already in to db
-            if dihed_prms[ft].has_key(dihedtype):
+            if dihedtype in dihed_prms[ft]:
                 if ft != 9:
-                    print '; WARNING: multiple dihedral definition for type: '+str(ft)
-                    print '; '+dihedtype
-                    print '; New parameters   : ',params
-                    print '; Overridden params: ',dihed_prms[ft][dihedtype][0]
-                    print ';'
+                    print('; WARNING: multiple dihedral definition for type: '+str(ft))
+                    print('; '+dihedtype)
+                    print('; New parameters   : ',params)
+                    print('; Overridden params: ',dihed_prms[ft][dihedtype][0])
+                    print(';')
                 # Add new params
                 dihed_prms[ft][dihedtype].append(params)
                 
@@ -483,8 +483,8 @@ if __name__ == '__main__':
             molecule_exists=True
             molname = line.split()[0]
             if molname in molecules:
-                print '\n%s'%('[ moleculetype ]')
-                print line
+                print('\n%s'%('[ moleculetype ]'))
+                print(line)
                 # Update the shift to get the right index for atoms
                 nshift = iat
                 #print >> sys.stderr, 'nshift is %i when enter %s'%(nshift,molname)
@@ -497,7 +497,7 @@ if __name__ == '__main__':
             # Once LJ parameters are taken, we can change attype by attypeb (for OPLS)
             # WARNING: the link between atom_prms and the attype will be lost for OPLS at this point
             atoms[iat].attype = atom_prms[atoms[iat].attype].split()[-1]
-            print line #+ '; mass:'+atom_prms[atoms[iat].attype].split()[0]
+            print(line) #+ '; mass:'+atom_prms[atoms[iat].attype].split()[0]
             # Update iat
             #print >> sys.stderr, 'Increasing iat to %i for after atom %s'%(iat+1,atoms[iat].attype)
             iat += 1
@@ -510,16 +510,16 @@ if __name__ == '__main__':
             ft=int(data[2])
             # if there is a dict for this ft. Otherwise, create to 
             # avoid errors
-            if not bond_prms.has_key(ft):
+            if not ft in bond_prms:
                     bond_prms[ft] = dict()
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype
             itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
             if len(data) == 3 and ft != 5:
                 # Get data from bondtype (consider also reverse order)
                 itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
-                if bond_prms[ft].has_key(itemtype):
+                if itemtype in bond_prms[ft]:
                     data.append(bond_prms[ft][itemtype])
-                elif bond_prms[ft].has_key(itemtype_r):
+                elif itemtype_r in bond_prms[ft]:
                     data.append(bond_prms[ft][itemtype_r])
                 else:
                     data.append("0  0")
@@ -537,7 +537,7 @@ if __name__ == '__main__':
             bonds.append(bond())    
             bonds[-1].setbond(*data)
             #bonds[-1].printbond()
-            print comment+bonds[-1].entryline()+'      ;'+itemtype
+            print(comment+bonds[-1].entryline()+'      ;'+itemtype)
             #----------------------
             #Print gaussian params
             #----------------------
@@ -546,7 +546,7 @@ if __name__ == '__main__':
                 if (bonds[-1].ft == 1):
                     r0_g = float(bonds[-1].prms.split()[0])*10.
                     kb_g = float(bonds[-1].prms.split()[1])/4.184/100.
-                    print >>f, 'HrmStr1 %s  %12.4f %12.4f'%(itemtype.replace('-','  '),kb_g,r0_g)
+                    print('HrmStr1 %s  %12.4f %12.4f'%(itemtype.replace('-','  '),kb_g,r0_g),file=f)
             #
             
         elif section == 'pairs' and molecule_exists:
@@ -556,16 +556,16 @@ if __name__ == '__main__':
             ft=int(data[2])
             # if there is a dict for this ft. Otherwise, create to 
             # avoid errors
-            if not pair_prms.has_key(ft):
+            if not ft in pair_prms:
                     pair_prms[ft] = dict()
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype
             itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
             if len(data) == 3:
                 # Get data from bondtype (consider also reverse order)
                 itemtype_r = atoms[i2].attype+'-'+atoms[i1].attype
-                if pair_prms[ft].has_key(itemtype):
+                if itemtype in pair_prms[ft]:
                     params = pair_prms[ft][itemtype]
-                elif pair_prms[ft].has_key(itemtype_r):
+                elif itemtype_r in pair_prms[ft]:
                     params = pair_prms[ft][itemtype_r]
                 else:
                     # Generate pairs
@@ -607,10 +607,10 @@ if __name__ == '__main__':
             # Form pairs
             pairs.append(pair())    
             pairs[-1].setpair(*data)
-            print comment+pairs[-1].entryline()+'      ;'+itemtype
+            print(comment+pairs[-1].entryline()+'      ;'+itemtype)
             
         elif section == 'exclusions' and molecule_exists:
-            print line
+            print(line)
     
         elif section == 'angles' and molecule_exists:
             comment=''
@@ -624,9 +624,9 @@ if __name__ == '__main__':
             if len(data) == 4:
                 # Get data from bondtype (consider also reverse order)
                 itemtype_r = atoms[i3].attype+'-'+atoms[i2].attype+'-'+atoms[i1].attype
-                if angle_prms[ft].has_key(itemtype):
+                if itemtype in angle_prms[ft]:
                     data.append(angle_prms[ft][itemtype])
-                elif angle_prms[ft].has_key(itemtype_r):
+                elif itemtype_r in angle_prms[ft]:
                     data.append(angle_prms[ft][itemtype_r])
                 else:
                     data.append("0  0  0")
@@ -639,7 +639,7 @@ if __name__ == '__main__':
             # Form element
             angles.append(angle())    
             angles[-1].setangle(*data)
-            print comment+angles[-1].entryline()+'      ;'+itemtype
+            print(comment+angles[-1].entryline()+'      ;'+itemtype)
             #----------------------
             #Print gaussian params
             #----------------------
@@ -648,7 +648,7 @@ if __name__ == '__main__':
                 if (angles[-1].ft == 1):
                     a0_g = float(angles[-1].prms.split()[0])
                     ka_g = float(angles[-1].prms.split()[1])/4.184
-                    print >>f, 'HrmBnd1 %s  %12.4f %12.4f'%(itemtype.replace('-','  '),ka_g,a0_g)
+                    print('HrmBnd1 %s  %12.4f %12.4f'%(itemtype.replace('-','  '),ka_g,a0_g),file=f)
             #
             
         elif section == 'dihedrals' and molecule_exists:
@@ -663,9 +663,9 @@ if __name__ == '__main__':
             if len(data) == 5:
                 # Get data from bondtype. For dihedrals, we have a list of params (consider also reverse order)
                 itemtype_r = atoms[i4].attype+'-'+atoms[i3].attype+'-'+atoms[i2].attype+'-'+atoms[i1].attype
-                if dihed_prms[ft].has_key(itemtype):
+                if itemtype in dihed_prms[ft]:
                     dihedral_param_list=dihed_prms[ft][itemtype]
-                elif dihed_prms[ft].has_key(itemtype_r):
+                elif itemtype_r in dihed_prms[ft]:
                     dihedral_param_list=dihed_prms[ft][itemtype_r]
                 # Try wild cards
                 else:
@@ -694,7 +694,7 @@ if __name__ == '__main__':
                             Xitemtype = dihed_key
                             break
                                 
-                    if dihed_prms[ft].has_key(Xitemtype):
+                    if Xitemtype in dihed_prms[ft]:
                         dihedral_param_list=dihed_prms[ft][Xitemtype]
                     else:
                         dihedral_param_list=["0  0  0"]
@@ -716,7 +716,7 @@ if __name__ == '__main__':
                 data.append(params)
                 diheds.append(dihed())  
                 diheds[-1].setdihed(*data)
-                print comment+diheds[-1].entryline()+'      ;'+itemtype+' # '+str(i+1)
+                print(comment+diheds[-1].entryline()+'      ;'+itemtype+' # '+str(i+1))
                 # Restore data for next cycle
                 del data[-1]
                 #----------------------
@@ -736,9 +736,9 @@ if __name__ == '__main__':
                         n_g  = int(diheds[-1].prms.split()[2])
                         if (n_g > 4):
                             # This function type needs revision
-                            print >>f, '! Warning: too large multiplicity for an AmbTrs. Maybe DreiTrs may fit:'
+                            print('! Warning: too large multiplicity for an AmbTrs. Maybe DreiTrs may fit:',file=f)
                             p0_g = p0_g + 180.
-                            print >>f, '! DreiTrs %s  %12.4f %12.4f %2.1f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g),1.)
+                            print('! DreiTrs %s  %12.4f %12.4f %2.1f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g),1.),file=f)
                         elif (n_g > 0):
                             if itemtype not in gau_diheds_amb.keys():
                                 gau_diheds_amb[itemtype] = [[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]]
@@ -751,7 +751,7 @@ if __name__ == '__main__':
                         p0_g = float(diheds[-1].prms.split()[0])+180.
                         kd_g = float(diheds[-1].prms.split()[1])/4.184
                         n_g  = 1
-                        print >>f, 'ImpTrs %s  %12.4f %12.4f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g))
+                        print('ImpTrs %s  %12.4f %12.4f %2.1f'%(itemtype.replace('-','  '),kd_g,p0_g,float(n_g)),file=f)
                     elif (diheds[-1].ft == 3):
                         # RB type:
                         c0  = float(diheds[-1].prms.split()[0])
@@ -777,10 +777,10 @@ if __name__ == '__main__':
                 #
             
         elif section == 'system':
-            print line
+            print(line)
             
         elif section == 'molecules':
-            print line
+            print(line)
             
     #print >> sys.stderr, ""
     #print >> sys.stderr, "Summary of gau_diheds"
@@ -800,8 +800,8 @@ if __name__ == '__main__':
         v2 = gau_diheds_amb[dihed][1][0]
         v3 = gau_diheds_amb[dihed][2][0]
         v4 = gau_diheds_amb[dihed][3][0]
-        print >>f, 'AmbTrs %s %4i %4i %4i %4i %12.4f %12.4f %12.4f %12.4f %2.1f'%(dihed.replace('-','  '),\
-                                                                                  p1,p2,p3,p4,\
-                                                                                  v1,v2,v3,v4,1.)
+        print('AmbTrs %s %4i %4i %4i %4i %12.4f %12.4f %12.4f %12.4f %2.1f'%(dihed.replace('-','  '),\
+                                                                             p1,p2,p3,p4,\
+                                                                             v1,v2,v3,v4,1.),file=f)
         
     f.close()
