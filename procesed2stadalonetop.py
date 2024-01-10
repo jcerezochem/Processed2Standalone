@@ -729,7 +729,7 @@ if __name__ == '__main__':
                 itemtype_r_and_params='*'.join([itemtype_r]+plist_chr)
                 if itemtype_and_params not in gau_diheds and itemtype_r_and_params not in gau_diheds:
                     gau_diheds.append(itemtype_and_params)
-                    if (diheds[-1].ft == 1 or diheds[-1].ft == 9):
+                    if (diheds[-1].ft == 1 or diheds[-1].ft == 9 or diheds[-1].ft == 4):
                         # Proper dihedral: Fourier type
                         p0_g = float(diheds[-1].prms.split()[0])
                         kd_g = float(diheds[-1].prms.split()[1])/4.184
