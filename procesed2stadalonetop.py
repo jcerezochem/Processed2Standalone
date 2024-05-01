@@ -660,9 +660,9 @@ if __name__ == '__main__':
             i4=int(data[3])-1 + nshift
             ft=int(data[4])
             itemtype   = atoms[i1].attype+'-'+atoms[i2].attype+'-'+atoms[i3].attype+'-'+atoms[i4].attype
+            itemtype_r = atoms[i4].attype+'-'+atoms[i3].attype+'-'+atoms[i2].attype+'-'+atoms[i1].attype
             if len(data) == 5:
                 # Get data from bondtype. For dihedrals, we have a list of params (consider also reverse order)
-                itemtype_r = atoms[i4].attype+'-'+atoms[i3].attype+'-'+atoms[i2].attype+'-'+atoms[i1].attype
                 if itemtype in dihed_prms[ft]:
                     dihedral_param_list=dihed_prms[ft][itemtype]
                 elif itemtype_r in dihed_prms[ft]:
@@ -728,6 +728,7 @@ if __name__ == '__main__':
                 itemtype_and_params='*'.join([itemtype]+plist_chr)
                 itemtype_r_and_params='*'.join([itemtype_r]+plist_chr)
                 if itemtype_and_params not in gau_diheds and itemtype_r_and_params not in gau_diheds:
+                    print(itemtype_and_params, itemtype_r_and_params)
                     gau_diheds.append(itemtype_and_params)
                     if (diheds[-1].ft == 1 or diheds[-1].ft == 9 or diheds[-1].ft == 4):
                         # Proper dihedral: Fourier type
