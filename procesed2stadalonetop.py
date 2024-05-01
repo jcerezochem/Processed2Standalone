@@ -305,6 +305,7 @@ if __name__ == '__main__':
     f = open('ff_gau.prm','w')
     print('! Non-bonded master equation for AmberFF;',file=f)
     print('NonBon 3 1 0 0 0.0 0.0 0.5 0.0 0.0 -1.2',file=f)
+    flj = open('Rlj.dat','w')
     gau_bonds=[]
     gau_angles=[]
     gau_diheds=[]
@@ -498,6 +499,19 @@ if __name__ == '__main__':
             # WARNING: the link between atom_prms and the attype will be lost for OPLS at this point
             atoms[iat].attype = atom_prms[atoms[iat].attype].split()[-1]
             print(line) #+ '; mass:'+atom_prms[atoms[iat].attype].split()[0]
+            # Print Rlj.dat file
+            V = atoms[iat].V
+            W = atoms[iat].W
+            if combrule == 1:
+                C6  = V 
+                C12 = W
+                rmin = (2.0 * C12 / C6)**(1./6.) * 10.0 # Angs
+            elif combrule == 2 or combrule == 3:
+                sgm = V
+                eps = W
+                rmin = (2.0)**(1./6.) * sgm * 10.0 # Angs
+            params = "%12.4f" % (rmin)
+            print(params,file=flj)
             # Update iat
             #print >> sys.stderr, 'Increasing iat to %i for after atom %s'%(iat+1,atoms[iat].attype)
             iat += 1
@@ -728,7 +742,6 @@ if __name__ == '__main__':
                 itemtype_and_params='*'.join([itemtype]+plist_chr)
                 itemtype_r_and_params='*'.join([itemtype_r]+plist_chr)
                 if itemtype_and_params not in gau_diheds and itemtype_r_and_params not in gau_diheds:
-                    print(itemtype_and_params, itemtype_r_and_params)
                     gau_diheds.append(itemtype_and_params)
                     if (diheds[-1].ft == 1 or diheds[-1].ft == 9 or diheds[-1].ft == 4):
                         # Proper dihedral: Fourier type
